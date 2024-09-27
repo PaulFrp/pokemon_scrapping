@@ -24,6 +24,5 @@ class EmbeddingsGenerator:
         self.generate_embeddings()
         self.save_data()
 
-# Usage example:
 generator = EmbeddingsGenerator(input_file="./data/cleaned/merged_filtered_output.csv", output_file="./data/embedded/embeddings_merged_data.csv")
 generator.run()

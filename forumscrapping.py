@@ -53,7 +53,6 @@ class Scraper:
         df = self.to_dataframe()
         df.to_csv(filename, index=False)
 
-# Example usage:
 scrapers = [
     Scraper("https://forums.serebii.net/threads/pokemon-scarlet-violet-general-discussion-thread.761996", total_pages=27),
     Scraper("https://forums.serebii.net/threads/what-things-surprised-you-from-pokemon-scarlet-violet.760160", total_pages=3),

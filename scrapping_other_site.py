@@ -36,7 +36,6 @@ class Scraper:
                     if '/community/index.php?threads/' in thread_url:
                         full_thread_url = self.thread_base_url + thread_url
 
-                        # Visit the thread and scrape all pages within the thread
                         self.scrape_thread(full_thread_url)
             else:
                 print(f"Failed to retrieve page {page_number}. Status code: {response.status_code}")
@@ -50,7 +49,6 @@ class Scraper:
             if response.status_code == 200:
                 soup = BeautifulSoup(response.text, 'html.parser')
 
-                # Scrape the current page
                 self.scrape_thread_page(soup)
 
                 # Check if there's a "Next" page link and get its URL
@@ -58,9 +56,8 @@ class Scraper:
                 
                 if next_page_link:
                     next_page_url = next_page_link['href']
-                    thread_url = self.thread_base_url + next_page_url  # Update to the next page URL
+                    thread_url = self.thread_base_url + next_page_url  
                 else:
-                    # No more pages, stop the loop
                     break
             else:
                 print(f"Failed to retrieve thread page {thread_url}. Status code: {response.status_code}")
@@ -96,7 +93,6 @@ class Scraper:
         df = self.to_dataframe()
         df.to_csv(filename, index=False)
 
-# Example usage:
 scraper = Scraper("https://pokegym.net/community/index.php?forums/vg-news-gossip.148", total_pages=12, thread_base_url="https://pokegym.net")
 scraper.scrape()
 scraper.save_to_csv("scraped_threads.csv")
