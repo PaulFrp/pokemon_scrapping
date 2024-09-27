@@ -1,14 +1,29 @@
 import pandas as pd
 from sentence_transformers import SentenceTransformer
 
-data = pd.read_csv("./data/filtered_file.csv")
+class EmbeddingsGenerator:
+    def __init__(self, input_file, output_file, model_name="all-mpnet-base-v2"):
+        self.input_file = input_file
+        self.output_file = output_file
+        self.model = SentenceTransformer(model_name)
 
-model = SentenceTransformer("all-mpnet-base-v2")
-print(data['comment'].isna().sum())
-data['comment'] = data['comment'].fillna('')
+    def load_data(self):
+        self.data = pd.read_csv(self.input_file)
+        print(f"Number of missing comments: {self.data['comment'].isna().sum()}")
+        self.data['comment'] = self.data['comment'].fillna('')
 
-data['embeddings'] = data['comment'].apply(lambda x: model.encode(x).tolist())
+    def generate_embeddings(self):
+        self.data['embeddings'] = self.data['comment'].apply(lambda x: self.model.encode(x).tolist())
 
-data.to_csv("./data/embeddings_data.csv", index=False)
+    def save_data(self):
+        self.data.to_csv(self.output_file, index=False)
+        print(f"Embeddings saved to {self.output_file}")
 
-print("Embeddings saved to embeddings_data.csv")
+    def run(self):
+        self.load_data()
+        self.generate_embeddings()
+        self.save_data()
+
+# Usage example:
+generator = EmbeddingsGenerator(input_file="./data/cleaned/merged_filtered_output.csv", output_file="./data/embedded/embeddings_merged_data.csv")
+generator.run()
