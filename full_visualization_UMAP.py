@@ -74,20 +74,6 @@ class DataVisualizer:
         plt.savefig('./graphs/kmeans_umap.png')
         plt.show()
 
-    def generate_wordcloud(self):
-
-        custom_stopwords = set(STOPWORDS)
-        custom_stopwords.update(["Pokemon", "one", "game", "Pokmon", "think", "thing"])
-
-        text = ' '.join(self.data['comment'].values)
-        wordcloud = WordCloud(width=800, height=400, background_color='white', stopwords=custom_stopwords).generate(text)
-        plt.figure(figsize=(10, 6))
-        plt.imshow(wordcloud, interpolation='bilinear')
-        plt.axis('off')
-        plt.title('Word Cloud of Comments')
-        plt.savefig('./graphs/wordcloud_comments.png')
-        plt.show()
-
     def plot_silhouette(self):
       
         silhouette_vals = silhouette_samples(self.umap_result, self.kmeans.labels_)
@@ -163,15 +149,40 @@ class DataVisualizer:
             closest_comments.append(self.data['comment'].iloc[closest_idx])
 
         return closest_comments
+    
+    def generate_wordcloud(self):
+
+        custom_stopwords = set(STOPWORDS)
+        custom_stopwords.update(["Pokemon", "one", "game", "Pokmon", "think", "thing"])
+
+        text = ' '.join(self.data['comment'].values)
+        wordcloud = WordCloud(width=800, height=400, background_color='white', stopwords=custom_stopwords).generate(text)
+        plt.figure(figsize=(10, 6))
+        plt.imshow(wordcloud, interpolation='bilinear')
+        plt.axis('off')
+        plt.title('Word Cloud of Comments')
+        plt.savefig('./graphs/wordcloud_comments.png')
+        plt.show()
 
 
     def wordcloud_for_clusters(self):
         closest_comments = self.find_closest_comments()
 
+    # Combine custom stopwords with default ones
         custom_stopwords = set(STOPWORDS)
-        custom_stopwords.update(["Pokemon", "one", "game", "Pokmon", "think", "thing", "things", "Thank", "Thanks", "games", "see", "time", "something", "way", "make", "use", "even", "Im", "S", "Pokémon", "really", "new"])
+        custom_stopwords.update([ "take", "look", "cant", "got", "thats", "able" , "want" ,"still" ,"good" ,"sure", 
+                              "still", "will", "dont", "say", "go", "well", "going", "know", "much", "actually", 
+                              "though", "great", "anything", "Pokemon", "one", "game", "Pokmon", "think", "thing", 
+                              "things", "Thank", "Thanks", "games", "see", "time", "something", "way", "make", 
+                              "use", "even", "Im", "S", "Pokémon", "really", "new"])
 
         for i, comment in enumerate(closest_comments):
+        # Count the number of observations in the current cluster
+            cluster_size = sum(self.kmeans.labels_ == i)
+        
+        # Print the number of observations in the cluster
+            print(f'Cluster {i+1}: {cluster_size} observations')
+
         # Generate a word cloud for each cluster based on comments
             text = ' '.join(self.data['comment'][self.kmeans.labels_ == i].values)
             wordcloud = WordCloud(width=800, height=400, background_color='white', stopwords=custom_stopwords).generate(text)
@@ -179,9 +190,10 @@ class DataVisualizer:
             plt.figure(figsize=(10, 6))
             plt.imshow(wordcloud, interpolation='bilinear')
             plt.axis('off')
-            plt.title(f'Word Cloud for Cluster {i+1}')
+            plt.title(f'Word Cloud for Cluster {i+1} ({cluster_size} observations)')
             plt.savefig(f'./graphs/wordcloud_cluster_{i+1}.png')
             plt.show()
+
 
 
     def run_all_visualizations(self):
